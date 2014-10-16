@@ -61,7 +61,7 @@ def main():
     domains = [
         ''.join(d) + '.uz'\
         for d in itertools.product(
-            string.lowercase + string.digits,
+            string.lowercase + string.digits + '-',
             repeat=int(sys.argv[1])
         )
     ]
