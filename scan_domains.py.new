@@ -53,24 +53,26 @@ def job(fqdn):
             csvwriter = csv.writer(csvfile, delimiter=',')
             csvwriter.writerow([fqdn, retrieved_ip, istasix])
     except socket.gaierror as ex:
-        print('not found -> %s' % (fqdn))
-        
+        print('%s -> %s' % (fqdn, str(ex)))
 
 def main(): 
-    if len(sys.argv) < 2:
-        sys.exit(-1)
-    domains = [
-        ''.join(d) + '.uz'\
-        for d in itertools.product(
-            string.lowercase + string.digits + '-',
-            repeat=int(sys.argv[1])
-        )
-    ]
+    # if len(sys.argv) < 2:
+    #     sys.exit(-1)
+    # domains = [
+    #     ''.join(d) + '.uz'\
+    #     for d in itertools.product(
+    #         string.lowercase + string.digits + '-',
+    #         repeat=int(sys.argv[1])
+    #     )
+    # ]
 
-    for domain in domains:
-        pool.spawn(job, domain)
+    # for domain in domains:
+    with open('6-letter-cctld-alpha.txt') as f:
+        for line in f:
+            pool.spawn(job, line.strip('\n'))
+            # print(line.strip('\n'))
 
-    pool.join()
+        pool.join()
 
 
 if __name__ == '__main__':

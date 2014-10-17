@@ -8,8 +8,9 @@ import string
 from netaddr import IPAddress, IPNetwork
 import csv
 import sys
+from sam import block_v_1, block_v_2, block_c_2, block_c_3
 
-pool = Pool(512)
+pool = Pool(64)
 
 IPRANGE = [
     "213.230.64.0/18", "188.113.192.0/18", "89.236.192.0/18",
@@ -49,26 +50,17 @@ def job(fqdn):
         retrieved_ip = socket.gethostbyname(fqdn)
         print('%s -> %s' % (fqdn, retrieved_ip))
         istasix = is_in_tasix(retrieved_ip)
-        with open('domains.csv', 'a') as csvfile:
+        with open('domains_v2_c3_c2.csv', 'a') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',')
             csvwriter.writerow([fqdn, retrieved_ip, istasix])
     except socket.gaierror as ex:
-        print('not found -> %s' % (fqdn))
-        
+        print('%s -> %s' % (fqdn, str(ex)))
 
 def main(): 
-    if len(sys.argv) < 2:
-        sys.exit(-1)
-    domains = [
-        ''.join(d) + '.uz'\
-        for d in itertools.product(
-            string.lowercase + string.digits + '-',
-            repeat=int(sys.argv[1])
-        )
-    ]
-
+    import itertools
+    domains = itertools.product(block_v_2(), block_c_3(), block_c_2())
     for domain in domains:
-        pool.spawn(job, domain)
+        pool.spawn(job, ''.join(domain) + '.uz')
 
     pool.join()
 
