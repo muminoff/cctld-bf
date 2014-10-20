@@ -49,7 +49,7 @@ def job(fqdn):
         retrieved_ip = socket.gethostbyname(fqdn)
         print('%s -> %s' % (fqdn, retrieved_ip))
         istasix = is_in_tasix(retrieved_ip)
-        with open('domains.csv', 'a') as csvfile:
+        with open('domains_bf_4_gov.csv', 'a') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',')
             csvwriter.writerow([fqdn, retrieved_ip, istasix])
     except socket.gaierror as ex:
@@ -60,7 +60,7 @@ def main():
     if len(sys.argv) < 2:
         sys.exit(-1)
     domains = [
-        ''.join(d) + '.uz'\
+        ''.join(d) + '.gov.uz'\
         for d in itertools.product(
             string.lowercase + string.digits + '-',
             repeat=int(sys.argv[1])

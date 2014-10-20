@@ -10,7 +10,7 @@ import csv
 import sys
 from sam import block_v_1, block_v_2, block_c_2, block_c_3
 
-pool = Pool(64)
+pool = Pool(128)
 
 IPRANGE = [
     "213.230.64.0/18", "188.113.192.0/18", "89.236.192.0/18",
@@ -50,7 +50,7 @@ def job(fqdn):
         retrieved_ip = socket.gethostbyname(fqdn)
         print('%s -> %s' % (fqdn, retrieved_ip))
         istasix = is_in_tasix(retrieved_ip)
-        with open('domains_c2_c3_c3.csv', 'a') as csvfile:
+        with open('domains_v2_c3_c3.csv', 'a') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',')
             csvwriter.writerow([fqdn, retrieved_ip, istasix])
     except socket.gaierror as ex:
@@ -58,7 +58,7 @@ def job(fqdn):
 
 def main(): 
     import itertools
-    domains = itertools.product(block_c_2(), block_c_3(), block_c_3())
+    domains = itertools.product(block_v_2(), block_c_3(), block_c_3())
     for domain in domains:
         pool.spawn(job, ''.join(domain) + '.uz')
 

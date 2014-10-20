@@ -27,8 +27,7 @@ IPRANGE = [
     "91.240.12.0/22", "91.231.56.0/22", "91.229.160.0/22",
     "91.204.236.0/22", "91.203.172.0/22", "91.196.76.0/22",
     "84.54.120.0/22", "82.215.88.0/22", "82.215.68.0/22",
-    "217.12.84.0/23", "195.88.214.0/23", "193.27.206.0/23",
-    "91.234.218.0/23", "91.229.164.0/23", "84.54.112.0/23",
+    "217.12.84.0/23", "195.88.214.0/23", "193.27.206.0/23", "91.234.218.0/23", "91.229.164.0/23", "84.54.112.0/23",
     "83.221.162.0/23", "82.215.66.0/23", "217.12.86.0/24",
     "185.8.212.0/24", "91.213.31.0/24", "91.212.180.0/24",
     "91.212.89.0/24", "82.215.65.0/24", "46.8.35.0/24"
@@ -49,30 +48,23 @@ def job(fqdn):
         retrieved_ip = socket.gethostbyname(fqdn)
         print('%s -> %s' % (fqdn, retrieved_ip))
         istasix = is_in_tasix(retrieved_ip)
-        with open('domains.csv', 'a') as csvfile:
+        with open('domains_dict.csv', 'a') as csvfile:
             csvwriter = csv.writer(csvfile, delimiter=',')
             csvwriter.writerow([fqdn, retrieved_ip, istasix])
     except socket.gaierror as ex:
-        print('%s -> %s' % (fqdn, str(ex)))
+        print('not found -> %s' % (fqdn))
 
 def main(): 
-    # if len(sys.argv) < 2:
-    #     sys.exit(-1)
-    # domains = [
-    #     ''.join(d) + '.uz'\
-    #     for d in itertools.product(
-    #         string.lowercase + string.digits + '-',
-    #         repeat=int(sys.argv[1])
-    #     )
-    # ]
-
+    f = open('/usr/share/dict/words')
+    content = f.readlines()
+    for domain in content:
+        raw_s = domain.strip("\n")
+        if "'" in raw_s:
+            pool.spawn(job, raw_s.replace("'", '') + '.uz')
     # for domain in domains:
-    with open('6-letter-cctld-alpha.txt') as f:
-        for line in f:
-            pool.spawn(job, line.strip('\n'))
-            # print(line.strip('\n'))
+    #     pool.spawn(job, domain)
 
-        pool.join()
+    pool.join()
 
 
 if __name__ == '__main__':
